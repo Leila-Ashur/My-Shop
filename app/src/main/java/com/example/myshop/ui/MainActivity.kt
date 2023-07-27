@@ -1,5 +1,6 @@
 package com.example.myshop.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -17,20 +18,21 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     val productsViewModel:ProductsViewModel by viewModels()
-
     lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnNext.setOnClickListener {
+            val intent = Intent(this, UserActivity::class.java)
+            startActivity(intent)
+        }
     }
     override fun onResume() {
         productsViewModel.fetchProducts()
         super.onResume()
         productsViewModel.productsLiveData
             .observe(this, Observer { ProductList ->
-
-
                 Toast.makeText(
                     baseContext,
                     "fetched ${ProductList?.size} products",
@@ -38,15 +40,12 @@ class MainActivity : AppCompatActivity() {
                 ).show()
                 binding.rvAdapter.layoutManager = LinearLayoutManager(this@MainActivity)
                 binding.rvAdapter.adapter = ProductsRvAdapter(ProductList)
-
-
             })
         productsViewModel.errorLiveData.observe(this, Observer { error ->
             Toast.makeText(
                 baseContext,error,
                 Toast.LENGTH_LONG
             ).show()
-
         })
     }}
 
